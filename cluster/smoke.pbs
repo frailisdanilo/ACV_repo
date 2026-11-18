@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -N vlmp_smoke
+#PBS -q shortGPUQ
+#PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
+#PBS -l walltime=00:30:00
+#PBS -j oe
+#PBS -o /home/<username>/runs/
+set -e
+source ~/miniconda3/etc/profile.d/conda.sh && conda activate vlmp
+module load CUDA/12.4.0
+export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+cd ~/code/VLMPruner
+echo "node: $(hostname) commit: $(git rev-parse --short HEAD)"; nvidia-smi --query-gpu=name,memory.total --format=csv
+
+python -c "import torch; x=torch.randn(4096,4096,device='cuda',dtype=torch.bfloat16); print('matmul ok', (x@x).float().mean().item())"
+
+python -m lmms_eval --model qwen2_vl --model_args pretrained=Qwen/Qwen2-VL-7B-Instruct \
+  --tasks pope --limit 20 --batch_size 1 --output_path ~/runs/smoke_full
+# same command with pruning switched on (however your fork enables it) → ~/runs/smoke_pruned
