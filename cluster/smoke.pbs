@@ -1,19 +1,27 @@
 #!/bin/bash
+# Smoke test: Qwen2-VL-7B on a few POPE samples, pruning off vs on.
+# Submit from ~/runs so the log lands there:
+#   cd ~/runs && qsub ~/code/VLMPruner/cluster/smoke.pbs
 #PBS -N vlmp_smoke
 #PBS -q shortGPUQ
 #PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
 #PBS -l walltime=00:30:00
 #PBS -j oe
-#PBS -o /home/<username>/runs/
+#PBS -k oed
+# -j oe : stdout + stderr (prints + errors) go into ONE log file: vlmp_smoke.o<jobid>
+# -k oed: write that log straight into the submit dir while the job runs (tail -f works);
+#         if the cluster rejects this option, delete the line: the log then appears at job end
+
 set -e
-source ~/miniconda3/etc/profile.d/conda.sh && conda activate vlmp
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate vlmp
 module load CUDA/12.4.0
 export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+
 cd ~/code/VLMPruner
-echo "node: $(hostname) commit: $(git rev-parse --short HEAD)"; nvidia-smi --query-gpu=name,memory.total --format=csv
+echo "node: $(hostname) | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
+nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
 
-python -c "import torch; x=torch.randn(4096,4096,device='cuda',dtype=torch.bfloat16); print('matmul ok', (x@x).float().mean().item())"
-
-python -m lmms_eval --model qwen2_vl --model_args pretrained=Qwen/Qwen2-VL-7B-Instruct \
-  --tasks pope --limit 20 --batch_size 1 --output_path ~/runs/smoke_full
-# same command with pruning switched on (however your fork enables it) → ~/runs/smoke_pruned
+# extra options via: qsub -v SMOKE_ARGS="--n 10 --ratio 0.667" ...
+# -u = unbuffered: prints reach the log immediately, so nothing is lost if the job crashes or hits walltime
+python -u cluster/smoke_test.py ${SMOKE_ARGS}
