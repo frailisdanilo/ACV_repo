@@ -1,7 +1,8 @@
 #!/bin/bash
 # Smoke test: Qwen2-VL-7B on a few POPE samples, pruning off vs on.
-# Submit from ~/runs so the log lands there:
-#   cd ~/runs && qsub ~/code/VLMPruner/cluster/smoke.pbs
+# Submit FROM THE REPO ROOT (the job runs in the folder you submit from):
+#   cd <your repo> && qsub cluster/smoke.pbs
+# The log vlmp_smoke.o<jobid> appears in the repo root (ignored by .gitignore: *.o[0-9]*).
 #PBS -N vlmp_smoke
 #PBS -q shortGPUQ
 #PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
@@ -13,15 +14,17 @@
 #         if the cluster rejects this option, delete the line: the log then appears at job end
 
 set -e
+cd "$PBS_O_WORKDIR"     # = the folder qsub was run from
+[ -f cluster/smoke_test.py ] || { echo "Submit from the repo root (no cluster/smoke_test.py in $PWD)"; exit 1; }
+
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate vlmp
 module load CUDA/12.4.0
 export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 
-cd ~/ACV_repo
-echo "node: $(hostname) | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
+echo "node: $(hostname) | repo: $PWD | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
 nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
 
-# extra options via: qsub -v SMOKE_ARGS="--n 10 --ratio 0.667" ...
+# extra options via: qsub -v SMOKE_ARGS="--n 10 --ratio 0.667" cluster/smoke.pbs
 # -u = unbuffered: prints reach the log immediately, so nothing is lost if the job crashes or hits walltime
 python -u cluster/smoke_test.py ${SMOKE_ARGS}
