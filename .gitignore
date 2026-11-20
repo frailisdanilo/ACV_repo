@@ -4,8 +4,6 @@ __pycache__/
 runs/
 outputs/
 logs/
-*.o[0-9]*
-*.e[0-9]*
 *.safetensors
 *.bin
 *.pt

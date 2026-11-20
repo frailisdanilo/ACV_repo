@@ -18,7 +18,7 @@ conda activate vlmp
 module load CUDA/12.4.0
 export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 
-cd ~/code/VLMPruner
+cd ~/ACV_repo
 echo "node: $(hostname) | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
 nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
 
