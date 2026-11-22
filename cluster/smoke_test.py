@@ -54,7 +54,7 @@ def load_pope(n):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen2-VL-7B-Instruct")
-    ap.add_argument("--n", type=int, defaul=5, help="number of POPE samples")
+    ap.add_argument("--n", type=int, default=5, help="number of POPE samples")
     ap.add_argument("--pixels", type=int, default=1280*28*28, help="min_pixels=max_pixels")
     ap.add_argument("--ratio", type=float, default=1 - 150/1350, help="reduction ratio (paper is 88-9%)")
     ap.add_argument("--K", type=int, default=2, help="layer at which pruning happens")
