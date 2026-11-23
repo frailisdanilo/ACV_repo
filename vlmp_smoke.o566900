@@ -1,0 +1,100 @@
+node: hpc3-g05-n02.unitn.it | repo: /home/danilo.frailis/ACV_repo | commit: e423ada | job: 566900.hpc3-head1.unitn.it
+name, memory.total [MiB], memory.used [MiB]
+NVIDIA H100 NVL, 95830 MiB, 0 MiB
+torch 2.6.0+cu124 (CUDA 12.4) | transformers 4.45.0.dev0
+GPU: NVIDIA H100 NVL
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:05<00:22,  5.50s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:09<00:13,  4.62s/it]Loading checkpoint shards:  60%|██████    | 3/5 [00:13<00:08,  4.15s/it]Loading checkpoint shards:  80%|████████  | 4/5 [00:16<00:03,  3.89s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:16<00:00,  2.55s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:16<00:00,  3.35s/it]
+loaded in 54s, GPU mem 17.1 GB
+/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:567: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0.01` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:572: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `0.001` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:589: UserWarning: `do_sample` is set to `False`. However, `top_k` is set to `1` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_k`.
+  warnings.warn(
+
+[Qwen2VLForConditionalGeneration(
+  (visual): Qwen2VisionTransformerPretrainedModel(
+    (patch_embed): PatchEmbed(
+      (proj): Conv3d(3, 1280, kernel_size=(2, 14, 14), stride=(2, 14, 14), bias=False)
+    )
+    (rotary_pos_emb): VisionRotaryEmbedding()
+    (blocks): ModuleList(
+      (0-31): 32 x Qwen2VLVisionBlock(
+        (norm1): LayerNorm((1280,), eps=1e-06, elementwise_affine=True)
+        (norm2): LayerNorm((1280,), eps=1e-06, elementwise_affine=True)
+        (attn): VisionSdpaAttention(
+          (qkv): Linear(in_features=1280, out_features=3840, bias=True)
+          (proj): Linear(in_features=1280, out_features=1280, bias=True)
+        )
+        (mlp): VisionMlp(
+          (fc1): Linear(in_features=1280, out_features=5120, bias=True)
+          (act): QuickGELUActivation()
+          (fc2): Linear(in_features=5120, out_features=1280, bias=True)
+        )
+      )
+    )
+    (merger): PatchMerger(
+      (ln_q): LayerNorm((1280,), eps=1e-06, elementwise_affine=True)
+      (mlp): Sequential(
+        (0): Linear(in_features=5120, out_features=5120, bias=True)
+        (1): GELU(approximate='none')
+        (2): Linear(in_features=5120, out_features=3584, bias=True)
+      )
+    )
+  )
+  (model): VLMPruner(
+    (embed_tokens): Embedding(152064, 3584)
+    (layers): ModuleList(
+      (0-27): 28 x Qwen2VLDecoderLayer(
+        (self_attn): Qwen2VLSdpaAttention(
+          (q_proj): Linear(in_features=3584, out_features=3584, bias=True)
+          (k_proj): Linear(in_features=3584, out_features=512, bias=True)
+          (v_proj): Linear(in_features=3584, out_features=512, bias=True)
+          (o_proj): Linear(in_features=3584, out_features=3584, bias=False)
+          (rotary_emb): Qwen2RotaryEmbedding()
+        )
+        (mlp): Qwen2MLP(
+          (gate_proj): Linear(in_features=3584, out_features=18944, bias=False)
+          (up_proj): Linear(in_features=3584, out_features=18944, bias=False)
+          (down_proj): Linear(in_features=18944, out_features=3584, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): Qwen2RMSNorm((3584,), eps=1e-06)
+        (post_attention_layernorm): Qwen2RMSNorm((3584,), eps=1e-06)
+      )
+    )
+    (norm): Qwen2RMSNorm((3584,), eps=1e-06)
+  )
+  (lm_head): Linear(in_features=3584, out_features=152064, bias=False)
+)]
+  img tokens  1320 | LLM seq 1355 -> 1355 | gt yes | pred 'yes.' OK
+  img tokens  1320 | LLM seq 1354 -> 1354 | gt no  | pred 'no.' OK
+  img tokens  1320 | LLM seq 1354 -> 1354 | gt yes | pred 'yes.' OK
+  img tokens  1320 | LLM seq 1354 -> 1354 | gt no  | pred 'no.' OK
+  img tokens  1320 | LLM seq 1355 -> 1355 | gt yes | pred 'no.' WRONG
+Traceback (most recent call last):
+  File "/home/danilo.frailis/ACV_repo/cluster/smoke_test.py", line 168, in <module>
+    main()
+  File "/home/danilo.frailis/ACV_repo/cluster/smoke_test.py", line 146, in main
+    out = model.generate(**inputs, max_new_tokens=5, do_sample=False)
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/generation/utils.py", line 2015, in generate
+    result = self._sample(
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/generation/utils.py", line 2965, in _sample
+    outputs = self(**model_inputs, return_dict=True)
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/danilo.frailis/ACV_repo/qwen2_vl/modeling_qwen2_vl_self.py", line 821, in forward
+    outputs = self.model(
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/danilo.frailis/ACV_repo/qwen2_vl/modeling_qwen2_vl_self.py", line 348, in forward
+    retained_image_tokens_index, hidden_states = self.get_retained_image_token(self.config, last_layer_state, k_states)
+  File "/home/danilo.frailis/ACV_repo/qwen2_vl/modeling_qwen2_vl_self.py", line 426, in get_retained_image_token
+    height = VLMPruner_config['height']
+KeyError: 'height'
