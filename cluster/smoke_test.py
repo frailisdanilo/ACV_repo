@@ -129,7 +129,7 @@ def main():
                            image_token_length=len(pos),
                            reduction_ratio=args.ratio,
                            pivot_image_token=args.pivots,
-                           heigh=height,
+                           height=height,
                            width=width,
                            threshold=args.threshold,
                            token_batch=args.token_batch)
