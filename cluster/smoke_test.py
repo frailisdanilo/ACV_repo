@@ -155,8 +155,8 @@ def main():
             lines.append(f"  img tokens {len(pos):5d} | LLM seq {seen.get('in')} -> {seen.get('after')} "
                              f"| gt {gt:3s} | pred {answer!r} {'OK' if ok else 'WRONG'}")
 
-        results[model] = (correct, sum(times)/len(times))
-        print(f"\n[{model}]")
+        results[mode] = (correct, sum(times)/len(times))
+        print(f"\n[{mode}]")
         print("\n".join(lines))
 
     print("\n=== summary ===")
