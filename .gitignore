@@ -6,4 +6,4 @@ outputs/
 logs/
 *.safetensors
 *.bin
-*.pt
+*.ptplayground/data/eval
