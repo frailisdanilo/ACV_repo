@@ -1,0 +1,30 @@
+#!/bin/bash
+# LLaVA-1.5-7B smoke test: a few POPE questions, unpruned vs VLM-Pruner B=16 vs B=1.
+# Submit FROM THE REPO ROOT (the job runs in the folder you submit from):
+#   cd <your repo> && qsub cluster/llava_smoke.pbs
+# Output goes to runs/llava_smoke_<jobid>.log (runs/ is in .gitignore).
+#PBS -N llava_smoke
+#PBS -q shortGPUQ
+#PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
+#PBS -l walltime=00:30:00
+#PBS -j oe
+
+set -e
+cd "$PBS_O_WORKDIR"
+[ -f cluster/llava_smoke_test.py ] || { echo "Submit from the repo root (no cluster/llava_smoke_test.py in $PWD)"; exit 1; }
+[ -d playground/data/eval/pope ] || { echo "Missing playground/data/eval/pope (data link from step 6)"; exit 1; }
+
+mkdir -p runs
+exec > "runs/llava_smoke_${PBS_JOBID%%.*}.log" 2>&1
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate vlmp-llava
+export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+# match CPU threads to the CPUs requested above
+export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
+
+echo "node: $(hostname) | repo: $PWD | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
+nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
+
+# extra options via: qsub -v SMOKE_ARGS="--n 10" cluster/llava_smoke.pbs
+python -u cluster/llava_smoke_test.py ${SMOKE_ARGS}
