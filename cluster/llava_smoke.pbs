@@ -24,6 +24,7 @@ export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
 
 echo "node: $(hostname) | repo: $PWD | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
+echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES   (nvidia-smi below lists ALL GPUs of the node, not only ours)"
 nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
 
 # extra options via: qsub -v SMOKE_ARGS="--n 10" cluster/llava_smoke.pbs
