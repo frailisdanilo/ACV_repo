@@ -70,12 +70,15 @@ def main():
     import transformers
     print(f"torch {torch.__version__} | transformers {transformers.__version__}")
     assert torch.cuda.is_available(), "No GPU visible: are you on a GPU node?"
+    print(f"CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES')} | GPUs visible to torch: {torch.cuda.device_count()}")
 
     disable_torch_init()
     t0 = time.time()
     model_name = get_model_name_from_path(args.model)
+    # device_map="cuda:0": whole model on the first visible GPU (the default "auto" would
+    # spread it over every GPU it can see)
     tokenizer, model, image_processor, _ = load_pretrained_model(
-        args.model, None, model_name, attn_implementation="sdpa")
+        args.model, None, model_name, device_map="cuda:0", attn_implementation="sdpa")
     model.eval()
     inner = model.get_model()  # LlavaLlamaModel = LlavaMetaModel + VLMPruner
     print(f"model {model_name} loaded in {time.time() - t0:.0f}s, GPU mem {torch.cuda.memory_allocated() / 1e9:.1f} GB")
