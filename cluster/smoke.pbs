@@ -2,20 +2,21 @@
 # Smoke test: Qwen2-VL-7B on a few POPE samples, pruning off vs on.
 # Submit FROM THE REPO ROOT (the job runs in the folder you submit from):
 #   cd <your repo> && qsub cluster/smoke.pbs
-# The log vlmp_smoke.o<jobid> appears in the repo root (ignored by .gitignore: *.o[0-9]*).
+# Output goes to runs/smoke_<jobid>.log inside the repo (runs/ is in .gitignore).
 #PBS -N vlmp_smoke
 #PBS -q shortGPUQ
 #PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
 #PBS -l walltime=00:30:00
 #PBS -j oe
-#PBS -k oed
-# -j oe : stdout + stderr (prints + errors) go into ONE log file: vlmp_smoke.o<jobid>
-# -k oed: write that log straight into the submit dir while the job runs (tail -f works);
-#         if the cluster rejects this option, delete the line: the log then appears at job end
 
 set -e
 cd "$PBS_O_WORKDIR"     # = the folder qsub was run from
 [ -f cluster/smoke_test.py ] || { echo "Submit from the repo root (no cluster/smoke_test.py in $PWD)"; exit 1; }
+
+# from here on, everything (prints + errors) goes to runs/, written live (tail -f works)
+mkdir -p runs
+LOG=runs/smoke_${PBS_JOBID%%.*}.log
+exec > "$LOG" 2>&1
 
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate vlmp
@@ -23,7 +24,15 @@ module load CUDA/12.4.0
 export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 
 echo "node: $(hostname) | repo: $PWD | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
-nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
+nvidia-smi --query-gpu=index,name,memory.total,memory.used --format=csv
+
+# HPC3's PBS does not set CUDA_VISIBLE_DEVICES, so every job sees every GPU of the node.
+# Pick the GPU with the least memory in use and make it the only one this job can see.
+if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
+  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits \
+                                | sort -t, -k2 -n | head -1 | cut -d, -f1)
+fi
+echo "using GPU index: CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 
 # extra options via: qsub -v SMOKE_ARGS="--n 10 --ratio 0.667" cluster/smoke.pbs
 # -u = unbuffered: prints reach the log immediately, so nothing is lost if the job crashes or hits walltime

@@ -24,8 +24,15 @@ export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
 export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
 
 echo "node: $(hostname) | repo: $PWD | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
-echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES   (nvidia-smi below lists ALL GPUs of the node, not only ours)"
-nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
+nvidia-smi --query-gpu=index,name,memory.total,memory.used --format=csv
+
+# HPC3's PBS does not set CUDA_VISIBLE_DEVICES, so every job sees every GPU of the node.
+# Pick the GPU with the least memory in use and make it the only one this job can see.
+if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
+  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits \
+                                | sort -t, -k2 -n | head -1 | cut -d, -f1)
+fi
+echo "using GPU index: CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 
 # extra options via: qsub -v SMOKE_ARGS="--n 10" cluster/llava_smoke.pbs
 python -u cluster/llava_smoke_test.py ${SMOKE_ARGS}

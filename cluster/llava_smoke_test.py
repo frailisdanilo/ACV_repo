@@ -109,12 +109,13 @@ def main():
     summary = {}
 
     for name, token_batch in configs:
-        cfg = None
-        if token_batch is not None:
-            cfg = {"K": args.K, "image_token_start_index": 35, "image_token_length": 576,
-                   "reduction_ratio": args.ratio, "retain_token_num_for_llava_next": 320,
-                   "pivot_image_token": args.pivots, "threshold": args.threshold,
-                   "token_batch": token_batch}
+        # Unpruned = a config whose pruning layer K never occurs (-1), NOT None:
+        # upstream llava_arch.py writes cfg["image_token_length"] on every call and crashes on None.
+        cfg = {"K": args.K if token_batch is not None else -1,
+               "image_token_start_index": 35, "image_token_length": 576,
+               "reduction_ratio": args.ratio, "retain_token_num_for_llava_next": 320,
+               "pivot_image_token": args.pivots, "threshold": args.threshold,
+               "token_batch": token_batch if token_batch is not None else 16}
         # set on both config objects (normally the same object; this makes sure)
         for c in (model.config, inner.config):
             c.VLMPruner_config = cfg
