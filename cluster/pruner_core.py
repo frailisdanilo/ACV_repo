@@ -18,7 +18,7 @@ import numpy as np
 
 def _score(sim_rows, dist_rows, nf, lam):
     spatial_reward = dist_rows.min(axis=1, keepdims=True) * np.float32(nf)
-    return sim_rows * (np.float32(1.0) + np.floeat32(lam) * spatial_reward)
+    return sim_rows * (np.float32(1.0) + np.float32(lam) * spatial_reward)
 
 def paper_stage2(sim, spatial, pivots, R, tau0=0.8, B=16, nf=1.0/(24*2**0.5), lam=0.5):
     sim = np.asarray(sim, dtype=np.float32)
