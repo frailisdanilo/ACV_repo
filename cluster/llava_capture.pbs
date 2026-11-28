@@ -1,0 +1,33 @@
+#!/bin/bash
+# Capture VLM-Pruner selection inputs/outputs for N POPE images (LLaVA-1.5-7B).
+# Submit FROM THE REPO ROOT:   qsub cluster/llava_capture.pbs      (optional: -v N=50)
+# Output: runs/llava_capture/<jobid>/  (~7 MB per image; runs/ is gitignored)
+#PBS -N llava_capture
+#PBS -q shortGPUQ
+#PBS -l select=1:ncpus=4:mem=32gb:ngpus=1:gpu_type=H100
+#PBS -l walltime=00:30:00
+#PBS -j oe
+
+set -e
+cd "$PBS_O_WORKDIR"
+[ -f cluster/llava_capture.py ] || { echo "Submit from the repo root"; exit 1; }
+
+JOB=${PBS_JOBID%%.*}
+OUT=runs/llava_capture/$JOB
+mkdir -p "$OUT"
+exec > "$OUT/log.txt" 2>&1
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate vlmp-llava
+export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+export OMP_NUM_THREADS=4 MKL_NUM_THREADS=4
+
+echo "node: $(hostname) | commit: $(git rev-parse --short HEAD) | job: $PBS_JOBID"
+nvidia-smi --query-gpu=index,name,memory.used --format=csv
+if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
+  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits \
+                                | sort -t, -k2 -n | head -1 | cut -d, -f1)
+fi
+echo "using GPU index: CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+
+python -u cluster/llava_capture.py --n "${N:-30}" --out "$OUT"
