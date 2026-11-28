@@ -1,0 +1,72 @@
+{
+  "method": "full",
+  "env": {
+    "torch": "2.1.2+cu121",
+    "transformers": "4.37.2",
+    "gpu": "NVIDIA H100 NVL",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "gpus_visible": 1,
+    "commit": "362d3d3",
+    "job": "689562.hpc3-head1.unitn.it"
+  },
+  "pope": {
+    "n": 8910,
+    "time_ms_median": 53.610490169376135,
+    "time_ms_mean": 53.613510949476535,
+    "select_ms_median": 0.0,
+    "select_ms_mean": 0,
+    "seq_in_median": 637.0,
+    "seq_after_median": 637.0,
+    "per_category": {
+      "adversarial": {
+        "n": 3000,
+        "f1": 84.18439716312058,
+        "acc": 85.13333333333334,
+        "precision": 89.92424242424242,
+        "recall": 79.13333333333334,
+        "yes_ratio": 44.0
+      },
+      "popular": {
+        "n": 3000,
+        "f1": 86.13933236574745,
+        "acc": 87.26666666666667,
+        "precision": 94.50636942675159,
+        "recall": 79.13333333333334,
+        "yes_ratio": 41.86666666666667
+      },
+      "random": {
+        "n": 2910,
+        "f1": 87.34363502575422,
+        "acc": 88.1786941580756,
+        "precision": 97.45484400656814,
+        "recall": 79.13333333333334,
+        "yes_ratio": 41.855670103092784
+      }
+    },
+    "f1_mean": 85.88912151820742,
+    "acc_mean": 86.85956471935853
+  },
+  "ocrbench": {
+    "n": 1000,
+    "time_ms_median": 81.33564842864871,
+    "time_ms_mean": 103.01137046981603,
+    "select_ms_median": 0.0,
+    "select_ms_mean": 0,
+    "seq_in_median": 639.0,
+    "seq_after_median": 639.0,
+    "per_type": {
+      "Regular Text Recognition": 43,
+      "Irregular Text Recognition": 41,
+      "Artistic Text Recognition": 41,
+      "Handwriting Recognition": 26,
+      "Digit String Recognition": 5,
+      "Non-Semantic Text Recognition": 6,
+      "Scene Text-centric VQA": 119,
+      "Doc-oriented VQA": 15,
+      "Key Information Extraction": 5,
+      "Handwritten Mathematical Expression Recognition": 0
+    },
+    "score": 301
+  },
+  "peak_gpu_gb": 15.045264896
+}

@@ -1,0 +1,92 @@
+node: hpc3-g05-n01.unitn.it | repo: /home/danilo.frailis/ACV_repo | commit: 362d3d3 | job: 689562.hpc3-head1.unitn.it | method: full
+index, name, memory.total [MiB], memory.used [MiB]
+0, NVIDIA H100 NVL, 95830 MiB, 0 MiB
+1, NVIDIA H100 NVL, 95830 MiB, 625 MiB
+using GPU index: CUDA_VISIBLE_DEVICES=0
+{"torch": "2.1.2+cu121", "transformers": "4.37.2", "gpu": "NVIDIA H100 NVL", "CUDA_VISIBLE_DEVICES": "0", "gpus_visible": 1, "commit": "362d3d3", "job": "689562.hpc3-head1.unitn.it"}
+/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+You are using a model of type llava to instantiate a model of type llava_llama. This is not supported for all configurations of models and can yield errors.
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.51s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.10it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.00s/it]
+model loaded in 3s
+
+[pope] 8910 questions, method full
+/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:392: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `0` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/transformers/generation/configuration_utils.py:397: UserWarning: `do_sample` is set to `False`. However, `top_p` is set to `None` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `top_p`.
+  warnings.warn(
+  500/8910 | 39s | running acc 85.2%
+  1000/8910 | 77s | running acc 85.1%
+  1500/8910 | 115s | running acc 84.6%
+  2000/8910 | 154s | running acc 85.0%
+  2500/8910 | 193s | running acc 85.3%
+  3000/8910 | 231s | running acc 85.1%
+  3500/8910 | 266s | running acc 85.7%
+  4000/8910 | 302s | running acc 86.1%
+  4500/8910 | 337s | running acc 86.1%
+  5000/8910 | 372s | running acc 86.3%
+  5500/8910 | 407s | running acc 86.5%
+  6000/8910 | 442s | running acc 86.6%
+  6500/8910 | 477s | running acc 86.8%
+  7000/8910 | 513s | running acc 86.8%
+  7500/8910 | 550s | running acc 86.7%
+  8000/8910 | 587s | running acc 86.7%
+  8500/8910 | 622s | running acc 86.8%
+  8910/8910 | 651s | running acc 86.8%
+POPE F1 (mean of categories) 85.89 | acc 86.86
+  adversarial  F1 84.18 acc 85.13 yes-ratio 44.0 (n=3000)
+  popular      F1 86.14 acc 87.27 yes-ratio 41.9 (n=3000)
+  random       F1 87.34 acc 88.18 yes-ratio 41.9 (n=2910)
+time per question: median 54 ms | selection median 0.0 ms | seq 637 -> 637
+
+[ocrbench] 1000 questions, method full
+  500/1000 | 66s | running acc 56.2%
+  1000/1000 | 170s | running acc 30.1%
+OCRBench score 301 / 1000
+  Artistic Text Recognition: 41
+  Digit String Recognition: 5
+  Doc-oriented VQA: 15
+  Handwriting Recognition: 26
+  Handwritten Mathematical Expression Recognition: 0
+  Irregular Text Recognition: 41
+  Key Information Extraction: 5
+  Non-Semantic Text Recognition: 6
+  Regular Text Recognition: 43
+  Scene Text-centric VQA: 119
+time per question: median 81 ms | selection median 0.0 ms | seq 639 -> 639
+
+saved to runs/llava_eval/full_689562/
+
+=== authors' eval_pope.py on the same answers ===
+Category: adversarial, # samples: 3000
+TP	FP	TN	FN	
+1187	133	1367	313
+Accuracy: 0.8513333333333334
+Precision: 0.8992424242424243
+Recall: 0.7913333333333333
+F1 score: 0.8418439716312057
+Yes ratio: 0.44
+0.842, 0.851, 0.899, 0.791, 0.440
+====================================
+Category: popular, # samples: 3000
+TP	FP	TN	FN	
+1187	69	1431	313
+Accuracy: 0.8726666666666667
+Precision: 0.9450636942675159
+Recall: 0.7913333333333333
+F1 score: 0.8613933236574746
+Yes ratio: 0.4186666666666667
+0.861, 0.873, 0.945, 0.791, 0.419
+====================================
+Category: random, # samples: 2910
+TP	FP	TN	FN	
+1187	31	1379	313
+Accuracy: 0.881786941580756
+Precision: 0.9745484400656814
+Recall: 0.7913333333333333
+F1 score: 0.8734363502575422
+Yes ratio: 0.41855670103092785
+0.873, 0.882, 0.975, 0.791, 0.419
+====================================
