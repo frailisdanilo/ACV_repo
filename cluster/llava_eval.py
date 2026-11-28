@@ -271,9 +271,9 @@ def main():
             per_type={}
             for r in records:
                 per_type[r["group"]] = per_type.get(r["group"], 0) + r["correct"]
-            print(f"OCRBench score {res['score']} / {len(records)}")
             res["per_type"] = per_type
             res["score"] = sum(r["correct"] for r in records)
+            print(f"OCRBench score {res['score']} / {len(records)}")
             for t, s in sorted(per_type.items()):
                 print(f"  {t}: {s}")
 
