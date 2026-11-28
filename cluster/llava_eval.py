@@ -39,11 +39,11 @@ def load_pope(limit):
     questions = [json.loads(l) for l in open(f"{EVAL}/pope/llava_pope_test.jsonl")]
     labels = {}
 
-    for fn in os.listdir(f"{EVAL}/pope/coco"):
-        assert fn.startswith("coco_pope_") and fn.endswith(".json"), fn
-
-        cat = fn[len("coco_pope_"):-len("json")]
-        labels[cat] = [json.loads(l)["label"] for l in open(f"{EVAL}/pope/coco/{fn}")]
+    for cat in sorted({q["category"] for q in questions}):
+        path = f"{EVAL}/pope/coco/coco_pope_{cat}.json"
+        if not os.path.exists(path):
+            raise SystemExit(f"missing {path}; {EVAL}/pope/coco contains: {sorted(os.listdir(f'{EVAL}/pope/coco'))}")
+        labels[cat] = [json.loads(l)["label"] for l in open(path)]
     
     seen_per_cat = {}
     for q in questions:
