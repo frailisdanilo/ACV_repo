@@ -1,0 +1,35 @@
+{
+  "method": "B16",
+  "config": {
+    "K": 2,
+    "image_token_start_indes": 35,
+    "image_token_length": 576,
+    "reduction_ratio": 0.889,
+    "retain_token_num_for_llava_next": 320,
+    "pivot_image_token": 4,
+    "threshold": 0.8,
+    "token_batch": 16
+  },
+  "args": {
+    "method": "B16",
+    "bench": "pope,ocrbench",
+    "out": "runs/llava_eval/B16_689203",
+    "model": "liuhaotian/llava-v1.5-7b",
+    "limit": 50,
+    "ratio": 0.889,
+    "K": 2,
+    "threshold": 0.8,
+    "pivots": 4,
+    "max_new_tokens": 128,
+    "progress_every": 500
+  },
+  "env": {
+    "torch": "2.1.2+cu121",
+    "transformers": "4.37.2",
+    "gpu": "NVIDIA H100 NVL",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "gpus_visible": 1,
+    "commit": "6327577",
+    "job": "689203.hpc3-head1.unitn.it"
+  }
+}
