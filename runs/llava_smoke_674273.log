@@ -1,28 +1,0 @@
-node: hpc3-g05-n01.unitn.it | repo: /home/danilo.frailis/ACV_repo | commit: f436f7c | job: 674273.hpc3-head1.unitn.it
-CUDA_VISIBLE_DEVICES=   (nvidia-smi below lists ALL GPUs of the node, not only ours)
-name, memory.total [MiB], memory.used [MiB]
-NVIDIA H100 NVL, 95830 MiB, 577 MiB
-NVIDIA H100 NVL, 95830 MiB, 529 MiB
-torch 2.1.2+cu121 | transformers 4.37.2
-CUDA_VISIBLE_DEVICES=None | GPUs visible to torch: 2
-/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-You are using a model of type llava to instantiate a model of type llava_llama. This is not supported for all configurations of models and can yield errors.
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
-  return self.fget.__get__(instance, owner)()
-Loading checkpoint shards:  50%|█████     | 1/2 [00:44<00:44, 44.96s/it]Loading checkpoint shards: 100%|██████████| 2/2 [01:00<00:00, 27.55s/it]Loading checkpoint shards: 100%|██████████| 2/2 [01:00<00:00, 30.16s/it]
-model llava-v1.5-7b loaded in 71s, GPU mem 14.2 GB
-
-[full]
-Traceback (most recent call last):
-  File "/home/danilo.frailis/ACV_repo/cluster/llava_smoke_test.py", line 164, in <module>
-    main()
-  File "/home/danilo.frailis/ACV_repo/cluster/llava_smoke_test.py", line 140, in main
-    out = model.generate(input_ids, images=image_tensor.to(dtype=torch.float16, device="cuda"),
-  File "/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
-    return func(*args, **kwargs)
-  File "/home/danilo.frailis/ACV_repo/llava/model/language_model/llava_llama.py", line 136, in generate
-    ) = self.prepare_inputs_labels_for_multimodal(
-  File "/home/danilo.frailis/ACV_repo/llava/model/llava_arch.py", line 312, in prepare_inputs_labels_for_multimodal
-    self.config.VLMPruner_config["image_token_length"] = cur_image_features.shape[0]
-TypeError: 'NoneType' object does not support item assignment

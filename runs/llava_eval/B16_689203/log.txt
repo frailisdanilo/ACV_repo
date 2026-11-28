@@ -1,21 +1,0 @@
-node: hpc3-g05-n01.unitn.it | repo: /home/danilo.frailis/ACV_repo | commit: 6327577 | job: 689203.hpc3-head1.unitn.it | method: B16
-index, name, memory.total [MiB], memory.used [MiB]
-0, NVIDIA H100 NVL, 95830 MiB, 0 MiB
-1, NVIDIA H100 NVL, 95830 MiB, 625 MiB
-using GPU index: CUDA_VISIBLE_DEVICES=0
-{"torch": "2.1.2+cu121", "transformers": "4.37.2", "gpu": "NVIDIA H100 NVL", "CUDA_VISIBLE_DEVICES": "0", "gpus_visible": 1, "commit": "6327577", "job": "689203.hpc3-head1.unitn.it"}
-/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/huggingface_hub/file_download.py:949: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-You are using a model of type llava to instantiate a model of type llava_llama. This is not supported for all configurations of models and can yield errors.
-Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]/home/danilo.frailis/miniconda3/envs/vlmp-llava/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
-  return self.fget.__get__(instance, owner)()
-Loading checkpoint shards:  50%|█████     | 1/2 [00:01<00:01,  1.58s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.06it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:02<00:00,  1.04s/it]
-model loaded in 4s
-Traceback (most recent call last):
-  File "/home/danilo.frailis/ACV_repo/cluster/llava_eval.py", line 287, in <module>
-    main()
-  File "/home/danilo.frailis/ACV_repo/cluster/llava_eval.py", line 211, in main
-    items = load_pope(args.limit) if bench == "pope" else load_ocrbench(args.limit)
-  File "/home/danilo.frailis/ACV_repo/cluster/llava_eval.py", line 51, in load_pope
-    q["gt"] = labels[q["category"]][k]
-KeyError: 'adversarial'
