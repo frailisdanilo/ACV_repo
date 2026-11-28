@@ -7,9 +7,6 @@ off (VLMPruner_config = None) and once with pruning on, and reports for each run
   - the model's answer vs. the ground truth
   - prefill+generate time
 
-Usage (from the repo root, on a GPU node):
-    python cluster/smoke_test.py               # 5 samples, paper settings
-    python cluster/smoke_test.py --n 10 --ratio 0.667
 """
 
 import argparse

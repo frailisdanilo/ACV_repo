@@ -1,18 +1,9 @@
 """LLaVA-1.5-7B smoke test for VLM-Pruner.
 
 Runs a few POPE questions three times: unpruned, VLM-Pruner B=16, VLM-Pruner B=1.
-Inputs are built exactly like llava/eval/model_vqa_loader.py (vicuna_v1 template,
+Inputs are built like in llava/eval/model_vqa_loader.py (vicuna_v1 template,
 process_images, tokenizer_image_token, float16 images, greedy decoding).
 
-Per question it prints:
-  - position of the image token in the prompt (must be 35: the scripts hard-code it)
-  - sequence length entering layer 0 -> entering layer K (pruning happens just before layer K)
-  - Stage-2 selection time (get_retained_image_token, GPU-synchronised), total time
-  - prediction vs ground truth
-
-Run from the repo root (so ./playground/data/eval resolves), on a GPU node:
-    python cluster/llava_smoke_test.py
-    python cluster/llava_smoke_test.py --n 10
 """
 import argparse
 import json

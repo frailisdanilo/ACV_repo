@@ -1,9 +1,0 @@
-node: hpc3-g05-n02.unitn.it | repo: /home/danilo.frailis/ACV_repo | commit: 3958c16 | job: 559159.hpc3-head1.unitn.it
-name, memory.total [MiB], memory.used [MiB]
-NVIDIA H100 NVL, 95830 MiB, 907 MiB
-Traceback (most recent call last):
-  File "/home/danilo.frailis/ACV_repo/cluster/smoke_test.py", line 31, in <module>
-    from qwen2_vl.modeling_qwen2_vl_self import Qwen2VLForConditionalGeneration
-  File "/home/danilo.frailis/ACV_repo/qwen2_vl/modeling_qwen2_vl_self.py", line 12, in <module>
-    from transformers.models.qwen2_vl.modeling_qwen2_vl import (
-ImportError: cannot import name '_prepare_4d_causal_attention_mask_with_cache_position' from 'transformers.models.qwen2_vl.modeling_qwen2_vl' (/home/danilo.frailis/miniconda3/envs/vlmp/lib/python3.10/site-packages/transformers/models/qwen2_vl/modeling_qwen2_vl.py)

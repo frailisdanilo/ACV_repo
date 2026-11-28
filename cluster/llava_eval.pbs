@@ -1,0 +1,50 @@
+#!/bin/bash
+# Full LLaVA-1.5-7B evaluation (POPE + OCRBench) for ONE configuration.
+# Submit FROM THE REPO ROOT, choosing the method:
+#   qsub -v METHOD=full cluster/llava_eval.pbs
+#   qsub -v METHOD=B16  cluster/llava_eval.pbs
+#   qsub -v METHOD=B1   cluster/llava_eval.pbs
+# optional: BENCH=pope (or ocrbench), LIMIT=50 for a quick test
+# Results: runs/llava_eval/<METHOD>_<jobid>/  (answers, summary.json, log)
+#PBS -N llava_eval
+#PBS -q shortGPUQ
+#PBS -l select=1:ncpus=8:mem=32gb:ngpus=1:gpu_type=H100
+#PBS -l walltime=03:00:00
+#PBS -j oe
+
+set -e
+cd "$PBS_O_WORKDIR"
+[ -f cluster/llava_eval.py ] || { echo "Submit from the repo root (no cluster/llava_eval.py in $PWD)"; exit 1; }
+[ -n "$METHOD" ] || { echo "Set METHOD: qsub -v METHOD=full|B16|B1 cluster/llava_eval.pbs"; exit 1; }
+[ -d playground/data/eval/pope ] && [ -d playground/data/eval/OCRBench ] || { echo "Missing playground/data/eval data (step 6)"; exit 1; }
+
+JOB=${PBS_JOBID%%.*}
+OUT=runs/llava_eval/${METHOD}_${JOB}
+mkdir -p "$OUT"
+exec > "$OUT/log.txt" 2>&1
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate vlmp-llava
+export HF_HOME=$HOME/hf_cache HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+export OMP_NUM_THREADS=8 MKL_NUM_THREADS=8
+export GIT_COMMIT=$(git rev-parse --short HEAD)
+
+echo "node: $(hostname) | repo: $PWD | commit: $GIT_COMMIT | job: $PBS_JOBID | method: $METHOD"
+nvidia-smi --query-gpu=index,name,memory.total,memory.used --format=csv
+# HPC3's PBS does not set CUDA_VISIBLE_DEVICES: pick the GPU with the least memory in use
+if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
+  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits \
+                                | sort -t, -k2 -n | head -1 | cut -d, -f1)
+fi
+echo "using GPU index: CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+
+python -u cluster/llava_eval.py --method "$METHOD" --bench "${BENCH:-pope,ocrbench}" \
+       --out "$OUT" ${LIMIT:+--limit $LIMIT}
+
+# cross-check the POPE score with the authors' own scorer (prints F1 per category)
+if [ -f "$OUT/pope_llava_format.jsonl" ] && [ -z "$LIMIT" ]; then
+  echo -e "\n=== authors' eval_pope.py on the same answers ==="
+  python llava/eval/eval_pope.py --annotation-dir playground/data/eval/pope/coco \
+         --question-file playground/data/eval/pope/llava_pope_test.jsonl \
+         --result-file "$OUT/pope_llava_format.jsonl"
+fi
