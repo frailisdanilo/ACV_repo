@@ -136,7 +136,7 @@ def main():
 
     token_batch = METHODS[args.method]
     cfg = {"K":args.K if token_batch is not None else -1,
-           "image_token_start_indes":35,
+           "image_token_start_index":35,
            "image_token_length": 576,
            "reduction_ratio": args.ratio,
            "retain_token_num_for_llava_next": 320,
