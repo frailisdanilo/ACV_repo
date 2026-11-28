@@ -54,7 +54,7 @@ def load_pope(limit):
     for cat, n in seen_per_cat.items():
         assert n == len(labels[cat]), f"POPE {cat}: {n} questions but {len(labels[cat])} labels"
 
-    items = [{"id": q["question_id"], "image": f"{EVAL}/pope/val2014/{q['image']}", "question":q["text"], "gt":q["gt"], "group":q["catgory"]} for q in questions]
+    items = [{"id": q["question_id"], "image": f"{EVAL}/pope/val2014/{q['image']}", "question":q["text"], "gt":q["gt"], "group":q["category"]} for q in questions]
     return items[:limit] if limit else items
 
 def load_ocrbench(limit):
