@@ -59,8 +59,10 @@ def load_pope(limit):
 
 def load_ocrbench(limit):
     data = json.load(open(f"{EVAL}/OCRBench/OCRBench/OCRBench.json"))
-    items = [{"id":i, "image":f"{EVAL}/OCRBench/OCRBench_Images/{d['image_path']}", "question":d["question"], "group":d["type"], "dataset_name":d["dataset_name"]} for i, d in enumerate(data)]
-
+    items = [{"id": i, "image": f"{EVAL}/OCRBench/OCRBench_Images/{d['image_path']}",
+              "question": d["question"] + "\nAnswer the question using a single word or phrase.",
+              "gt": d["answers"], "group": d["type"], "dataset_name": d["dataset_name"]}
+             for i, d in enumerate(data)]
     return items[:limit] if limit else items
 
 #SCORING
@@ -269,6 +271,7 @@ def main():
             per_type={}
             for r in records:
                 per_type[r["group"]] = per_type.get(r["group"], 0) + r["correct"]
+            print(f"OCRBench score {res['score']} / {len(records)}")
             res["per_type"] = per_type
             res["score"] = sum(r["correct"] for r in records)
             for t, s in sorted(per_type.items()):
